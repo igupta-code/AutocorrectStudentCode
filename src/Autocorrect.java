@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Autocorrect
@@ -31,24 +34,32 @@ public class Autocorrect {
      * to threshold, sorted by edit distance, then sorted alphabetically.
      */
     public String[] runTest(String typed) {
+        ArrayList<String> correctedWords = new ArrayList<String>();
+
         for(int i = 0; i < dict.length; i++){
             // THIS IS WRONG
-            editDistance(dict[i], typed);
+            int editD = editDistance(dict[i], typed);
+            if(editD <= threshold){
+                correctedWords.add(dict[i]);
+                System.out.println(dict[i] + ", " + editD);
+            }
         }
+
         return new String[0];
+        // return new correctedWords.toArray(new String[correctedWords.size()]);
     }
 
     public int editDistance(String dictW, String word){
-        int[][] table = new int[dictW.length()][word.length()];
+        int[][] table = new int[dictW.length()+1][word.length()+1];
 
-        for(int i = 0; i < dictW.length(); i++){
-            for(int j = 0; j < word.length(); j++){
+        for(int i = 0; i < dictW.length()+1; i++){
+            for(int j = 0; j < word.length()+1; j++){
                 // If one string is empty, the difference is the length of the other string
                 if(i==0) table[0][j] = j;
                 else if(j==0) table[i][0] = i;
 
                 // If the last letters are equal, your edit dist is the same as that of the words w/o the last letters
-                else if(dictW.charAt(i) == word.charAt(j)) table[i][j] = table[i-1][j-1];
+                else if(dictW.charAt(i-1) == word.charAt(j-1)) table[i][j] = table[i-1][j-1];
 
                 // And 1 to the min length of the lengths of the last three strings we compared
                 else{
@@ -60,8 +71,7 @@ public class Autocorrect {
                 }
             }
         }
-
-        return table[dictW.length()-1][word.length()-1];
+        return table[dictW.length()][word.length()];
     }
 
 
