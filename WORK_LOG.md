@@ -1,4 +1,4 @@
-Name: YOUR NAME HERE
+Name: Isha Gupta 
 
 | Date     |   Time   |                                                                                                                                                                                                                                                                                                      Update |
 |:---------|:--------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
@@ -7,6 +7,9 @@ Name: YOUR NAME HERE
 | March 11 |  class   |                                                                                                         I wrote a draft of a levenshtein method to find the shortest edit distance. I have to figure out how to either test it with the whole dictionary or to narrow down the dictionary first to test it. |
 | March 16 | 5-5:30pm |                                                                I actually completely forgot what I did last class, so I am very grateful for my comments. I couldn't figure out how to get an arraylist to an array :(. But I just printed out my corrected words instead: I'm not getting all of them yet. |
 | March 16 | 5:30-6pm | I fixed some bugs! Turns out I'm supposed to be looking for anything less than or equal to the threshold, which explains the missing words. Then I was getting too many words because I wasn't checking the last letter of each word. So I increased the size of my table by 1 and shifted everything over. |
+| March 17 |  class   |                                                                                                                                                                 I stared out on the hash map stuff for the n-grams. I reviewed some of the hashing slides from DNA and then started on the Horner's method. |
+| March 17 |  9-9:45  |                  I was quite unproductive: mostly considering all the reasons why I didn't like the n-gram method, but also I don't have a better method so I guess we're going with this! I also fixed a bug: my map size for my letters map was too small. I also figured out how to sort alphabetically. |
+|          |          |                                                                                                                                                                                                                                                                                                             |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.

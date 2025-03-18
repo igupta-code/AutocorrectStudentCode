@@ -22,6 +22,12 @@ public class Autocorrect {
      */
     private String[] dict;
     private int threshold;
+    public static final int R = 27;
+    // Maybe change later
+    public final int MOD = 50021;
+    static char[] letters = new char[256];
+
+
     public Autocorrect(String[] words, int threshold) {
         this.dict = words;
         this.threshold = threshold;
@@ -35,7 +41,19 @@ public class Autocorrect {
      */
     public String[] runTest(String typed) {
         ArrayList<String> correctedWords = new ArrayList<String>();
+        ArrayList<Integer>[] dictHash = new ArrayList[MOD];
+        for(int i = 0; i < R; i++){
+            letters['A' + i] = 'i';
+        }
+        // add in last character -- i think '
 
+        // Go through
+        for(int i = 0; i < MOD; i++){
+            dictHash[i] = new ArrayList<Integer>();
+        }
+
+
+        // Filters potential suggestions to those within the edit distance threshold
         for(int i = 0; i < dict.length; i++){
             // THIS IS WRONG
             int editD = editDistance(dict[i], typed);
@@ -45,10 +63,11 @@ public class Autocorrect {
             }
         }
 
-        return new String[0];
-        // return new correctedWords.toArray(new String[correctedWords.size()]);
+        // Collections.sort(correctedWords);
+        return correctedWords.toArray(new String[0]);
     }
 
+    // Returns the editDistance between the misspelled word and a potential suggestion
     public int editDistance(String dictW, String word){
         int[][] table = new int[dictW.length()+1][word.length()+1];
 
@@ -72,6 +91,15 @@ public class Autocorrect {
             }
         }
         return table[dictW.length()][word.length()];
+    }
+
+    // Creates the initial hash for the first three letters
+    public static int hash(String s, int start) {
+        int hash = 0;
+        for (int i = 0; i < 3; i++) {
+            hash = (hash*R + letters[s.charAt(start + i)]);
+        }
+        return hash;
     }
 
 
@@ -100,4 +128,5 @@ public class Autocorrect {
             throw new RuntimeException(e);
         }
     }
+
 }
