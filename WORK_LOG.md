@@ -9,7 +9,7 @@ Name: Isha Gupta
 | March 16 | 5:30-6pm | I fixed some bugs! Turns out I'm supposed to be looking for anything less than or equal to the threshold, which explains the missing words. Then I was getting too many words because I wasn't checking the last letter of each word. So I increased the size of my table by 1 and shifted everything over. |
 | March 17 |  class   |                                                                                                                                                                 I stared out on the hash map stuff for the n-grams. I reviewed some of the hashing slides from DNA and then started on the Horner's method. |
 | March 17 |  9-9:45  |                  I was quite unproductive: mostly considering all the reasons why I didn't like the n-gram method, but also I don't have a better method so I guess we're going with this! I also fixed a bug: my map size for my letters map was too small. I also figured out how to sort alphabetically. |
-|          |          |                                                                                                                                                                                                                                                                                                             |
+| March 18 | 12:30-1  |                                                                                      Moved all the stuff for making my dictionary hashMap into the constructor so I am only doing it once. I also wrote out a rabin-karp that should, theoretically fill out the hash map. Not sure how to test that yet... |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.

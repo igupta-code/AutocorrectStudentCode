@@ -24,13 +24,44 @@ public class Autocorrect {
     private int threshold;
     public static final int R = 27;
     // Maybe change later
-    public final int MOD = 50021;
+    public static final int MOD = 50021;
+    public static final int N = 3;
     static char[] letters = new char[256];
+    ArrayList<Integer>[] dictHash;
+
 
 
     public Autocorrect(String[] words, int threshold) {
         this.dict = words;
         this.threshold = threshold;
+
+        // Set up the hash map for your dictionary
+        dictHash = new ArrayList[MOD];
+        // Makes 'a' correspond with index 0, 'b' with 1 .... (dealing w/smaller numbers when hashing)
+        for(int i = 0; i < R; i++){
+            letters['a' + i] = 'i';
+        }
+        // add in last character -- i think '
+
+        // Go through
+        for(int i = 0; i < MOD; i++){
+            dictHash[i] = new ArrayList<Integer>();
+            int seqHash = hash(dict[i], i);
+            // Use Rabin-Karp to find all n-grams and add them to the hash map
+            // Rabin-Karp modified from my DNA code
+            for(int j = N; j < dict[i].length() - N; j++){
+                dictHash[i].add(seqHash);
+                // Shift over the window by one letter
+                // First subtract out the first letter from hash
+                int firstL = letters[dict[i].charAt(i - N)];
+                seqHash = seqHash - firstL * (1 << 2*N - 2);
+                // Multiply by radix to shift over
+                seqHash *= R;
+                // Add the value of the last letter
+                seqHash += letters[dict[i].charAt(i)];
+
+            }
+        }
     }
 
     /**
@@ -41,16 +72,7 @@ public class Autocorrect {
      */
     public String[] runTest(String typed) {
         ArrayList<String> correctedWords = new ArrayList<String>();
-        ArrayList<Integer>[] dictHash = new ArrayList[MOD];
-        for(int i = 0; i < R; i++){
-            letters['A' + i] = 'i';
-        }
-        // add in last character -- i think '
 
-        // Go through
-        for(int i = 0; i < MOD; i++){
-            dictHash[i] = new ArrayList<Integer>();
-        }
 
 
         // Filters potential suggestions to those within the edit distance threshold
@@ -94,9 +116,10 @@ public class Autocorrect {
     }
 
     // Creates the initial hash for the first three letters
+    // Copied from my DNA code
     public static int hash(String s, int start) {
         int hash = 0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < N; i++) {
             hash = (hash*R + letters[s.charAt(start + i)]);
         }
         return hash;
