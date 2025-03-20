@@ -12,6 +12,7 @@ Name: Isha Gupta
 | March 18 |   12:30-1   |                                                                                      Moved all the stuff for making my dictionary hashMap into the constructor so I am only doing it once. I also wrote out a rabin-karp that should, theoretically fill out the hash map. Not sure how to test that yet... |
 | March 20 |  tutorial   |                                                                           I added some code in to fix the issue of words smaller than by n-gram length. I'm not sure how efficient it is, but I just add all words less than or equal to length 3 to my candidates array if my word is less than 6 letters. |
 | March 20 | 10:30-11:15 |                                            I figured out how to sort everything properly: I store my final words in a map of arraylists (the index representing the edit distance). Then you can sort each index of the map individually and return in order (both alphabetically and edit distance based). |
+| March 20 |    class    |                                                                Sooo I tried to add in a terminal and then everything broke... so now I am going back. It seemed like I was timing out on my remove duplicates method, but I was also had wayyy to many words inputed into candidates in the first place...  |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.

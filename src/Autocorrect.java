@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Scanner;
 
 /**
  * Autocorrect
@@ -32,7 +34,7 @@ public class Autocorrect {
 
     // Constructor!!!
     public Autocorrect(String[] words, int threshold) {
-        this.dict = words;
+        this.dict = loadDictionary("large");
         this.threshold = threshold;
 
         // Set up the hash map for your dictionary
@@ -69,10 +71,25 @@ public class Autocorrect {
                     seqHash = seqHash - firstL * (1 << 2 * N - 2);
                     seqHash *= R;
                     seqHash += letters[dict[i].charAt(j)];
-                    seqHash %= MOD;
+                    seqHash = (seqHash + MOD) % MOD;
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a word: ");
+        String word = scanner.next();
+        scanner.close();
+
+        System.out.println("Did you mean:");
+        Autocorrect main = new Autocorrect(null, 3);
+        String[] suggestions = main.runTest(word);
+        for(String suggestion: suggestions){
+            System.out.println(suggestion);
+        }
+
     }
 
     /**
@@ -81,7 +98,6 @@ public class Autocorrect {
      * @return An array of all dictionary words with an edit distance less than or equal
      * to threshold, sorted by edit distance, then sorted alphabetically.
      */
-
     public String[] runTest(String typed) {
         ArrayList<String>[] correctedWords = new ArrayList[threshold+1];
         ArrayList<String> candidates = new ArrayList<String>();
@@ -102,16 +118,16 @@ public class Autocorrect {
             seqHash = seqHash - firstL * (1 << 2*N - 2);
             seqHash *= R;
             seqHash += letters[typed.charAt(j)];
-            seqHash %= MOD;
+            seqHash = (seqHash + MOD) % MOD;
         }
-        System.out.println(candidates);
+        // System.out.println(candidates);
         // Remove duplicates
         candidates = removeDuplicates(candidates);
         // Adds all the small words into candidates
         if(typed.length() <= N+threshold){
             candidates.addAll(smallWords);
         }
-        System.out.println(candidates);
+        // System.out.println(candidates);
 
 
 
@@ -121,7 +137,7 @@ public class Autocorrect {
             int editD = editDistance(candidates.get(i), typed);
             if(editD <= threshold){
                 correctedWords[editD].add(candidates.get(i));
-                System.out.println(candidates.get(i) + ", " + editD);
+                // System.out.println(candidates.get(i) + ", " + editD);
             }
         }
         ArrayList<String> toReturn =  new ArrayList<>();
