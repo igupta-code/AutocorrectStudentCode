@@ -1,11 +1,10 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Scanner;
+import java.util.LinkedHashSet;
 
 /**
  * Autocorrect
@@ -34,7 +33,7 @@ public class Autocorrect {
 
     // Constructor!!!
     public Autocorrect(String[] words, int threshold) {
-        this.dict = loadDictionary("large");
+        this.dict = words;
         this.threshold = threshold;
 
         // Set up the hash map for your dictionary
@@ -71,26 +70,12 @@ public class Autocorrect {
                     seqHash = seqHash - firstL * (1 << 2 * N - 2);
                     seqHash *= R;
                     seqHash += letters[dict[i].charAt(j)];
-                    seqHash = (seqHash + MOD) % MOD;
+                    seqHash %= MOD;
                 }
             }
         }
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter a word: ");
-        String word = scanner.next();
-        scanner.close();
-
-        System.out.println("Did you mean:");
-        Autocorrect main = new Autocorrect(null, 3);
-        String[] suggestions = main.runTest(word);
-        for(String suggestion: suggestions){
-            System.out.println(suggestion);
-        }
-
-    }
 
     /**
      * Runs a test from the tester file, AutocorrectTester.
@@ -100,44 +85,41 @@ public class Autocorrect {
      */
     public String[] runTest(String typed) {
         ArrayList<String>[] correctedWords = new ArrayList[threshold+1];
+
+        // Find your candidate words:
         ArrayList<String> candidates = new ArrayList<String>();
         for(int i = 0; i <= threshold; i++){
             correctedWords[i] = new ArrayList<String>();
         }
 
-        //Create hashes for your word:
+        // Create hashes for your word:
         int seqHash = hash(typed);
         for(int j = N; j < typed.length(); j++){
             // Search for the seqHash in dictHash
             candidates.addAll(dictHash[seqHash]);
 
-
-            // Shift over the window by one letter by:
-            // Subtract out the first letter, xR to shift, add next number, and then mod
+            // Shift over the window by one letter by: - first letter, xR to shift, + next number, and then mod
             int firstL = letters[typed.charAt(j - N)];
             seqHash = seqHash - firstL * (1 << 2*N - 2);
             seqHash *= R;
             seqHash += letters[typed.charAt(j)];
-            seqHash = (seqHash + MOD) % MOD;
+            seqHash %= MOD;
         }
-        // System.out.println(candidates);
         // Remove duplicates
         candidates = removeDuplicates(candidates);
         // Adds all the small words into candidates
         if(typed.length() <= N+threshold){
             candidates.addAll(smallWords);
         }
-        // System.out.println(candidates);
 
 
 
         // Filters potential suggestions to those within the edit distance threshold
         for(int i = 0; i < candidates.size(); i++){
-            // THIS IS WRONG
             int editD = editDistance(candidates.get(i), typed);
             if(editD <= threshold){
                 correctedWords[editD].add(candidates.get(i));
-                // System.out.println(candidates.get(i) + ", " + editD);
+                System.out.println(candidates.get(i) + ", " + editD);
             }
         }
         ArrayList<String> toReturn =  new ArrayList<>();
@@ -154,6 +136,7 @@ public class Autocorrect {
     // Returns the editDistance between the misspelled word and a potential suggestion
     public int editDistance(String dictW, String word){
         int[][] table = new int[dictW.length()+1][word.length()+1];
+
 
         for(int i = 0; i < dictW.length()+1; i++){
             for(int j = 0; j < word.length()+1; j++){
@@ -187,22 +170,12 @@ public class Autocorrect {
         return hash;
     }
 
-    // Method modified from geeksforgeeks.org
-    public static  ArrayList<String> removeDuplicates(ArrayList<String> list) {
-        // Create a new ArrayList
-        ArrayList<String> newList = new ArrayList<String>();
-
-        // Traverse through the original list
-        for (String element : list) {
-            // If this word is not present in newList, then add it
-            if (!newList.contains(element)) {
-                newList.add(element);
-            }
-        }
-
-        // return the new list
-        return newList;
+    // Method explained by Tony and chat.GPT
+    public static ArrayList<String> removeDuplicates(ArrayList<String> list) {
+        // Use LinkedHashSet to maintain order and remove duplicates
+        return new ArrayList<>(new LinkedHashSet<>(list));
     }
+
 
 
     /**
