@@ -27,39 +27,50 @@ public class Autocorrect {
     public static final int MOD = 50021;
     public static final int N = 3;
     static char[] letters = new char[256];
-    ArrayList<Integer>[] dictHash;
+    ArrayList<String>[] dictHash;
+    public ArrayList<String> smallWords;
 
-
-
+    // Constructor!!!
     public Autocorrect(String[] words, int threshold) {
         this.dict = words;
         this.threshold = threshold;
 
         // Set up the hash map for your dictionary
         dictHash = new ArrayList[MOD];
+        smallWords = new ArrayList<String>();
         // Makes 'a' correspond with index 0, 'b' with 1 .... (dealing w/smaller numbers when hashing)
-        for(int i = 0; i < R; i++){
+        for(int i = 0; i < R-1; i++){
             letters['a' + i] = 'i';
         }
-        // add in last character -- i think '
+        letters['\''] = R-1;
+        // add in last character -- I think '
 
-        // Go through
-        for(int i = 0; i < MOD; i++){
-            dictHash[i] = new ArrayList<Integer>();
-            int seqHash = hash(dict[i], i);
-            // Use Rabin-Karp to find all n-grams and add them to the hash map
-            // Rabin-Karp modified from my DNA code
-            for(int j = N; j < dict[i].length() - N; j++){
-                dictHash[i].add(seqHash);
-                // Shift over the window by one letter
-                // First subtract out the first letter from hash
-                int firstL = letters[dict[i].charAt(i - N)];
-                seqHash = seqHash - firstL * (1 << 2*N - 2);
-                // Multiply by radix to shift over
-                seqHash *= R;
-                // Add the value of the last letter
-                seqHash += letters[dict[i].charAt(i)];
+        // Go through the dictionary to add all dictionary n-grams to Hash map
+        for(int i = 0; i < dict.length; i++){
+            // Put all words with length less than 3 into an arraylist
+            if(dict[i].length() <= N){
+                smallWords.add(dict[i]);
+            }
+            else{
+                // Find initial hash for the word
+                int seqHash = hash(dict[i]);
 
+                // Go through word to find all n-grams and add them to Hash map (below is modified from my DNA code)
+                for(int j = N; j < dict[i].length(); j++) {
+                    // Initialize arraylist if it hasn't been already
+                    if (dictHash[seqHash] == null) dictHash[seqHash] = new ArrayList<String>();
+                    // MIGHT BE WRONG???
+                    dictHash[seqHash].add(dict[i]);
+
+
+                    // Shift over the window by one letter by:
+                    // Subtract out the first letter, xR to shift, add next number, and then mod
+                    int firstL = letters[dict[i].charAt(j - N)];
+                    seqHash = seqHash - firstL * (1 << 2 * N - 2);
+                    seqHash *= R;
+                    seqHash += letters[dict[i].charAt(j)];
+                    seqHash %= MOD;
+                }
             }
         }
     }
@@ -70,23 +81,58 @@ public class Autocorrect {
      * @return An array of all dictionary words with an edit distance less than or equal
      * to threshold, sorted by edit distance, then sorted alphabetically.
      */
+
     public String[] runTest(String typed) {
-        ArrayList<String> correctedWords = new ArrayList<String>();
+        ArrayList<String>[] correctedWords = new ArrayList[threshold+1];
+        ArrayList<String> candidates = new ArrayList<String>();
+        for(int i = 0; i <= threshold; i++){
+            correctedWords[i] = new ArrayList<String>();
+        }
+
+        //Create hashes for your word:
+        int seqHash = hash(typed);
+        for(int j = N; j < typed.length(); j++){
+            // Search for the seqHash in dictHash
+            candidates.addAll(dictHash[seqHash]);
+
+
+            // Shift over the window by one letter by:
+            // Subtract out the first letter, xR to shift, add next number, and then mod
+            int firstL = letters[typed.charAt(j - N)];
+            seqHash = seqHash - firstL * (1 << 2*N - 2);
+            seqHash *= R;
+            seqHash += letters[typed.charAt(j)];
+            seqHash %= MOD;
+        }
+        System.out.println(candidates);
+        // Remove duplicates
+        candidates = removeDuplicates(candidates);
+        // Adds all the small words into candidates
+        if(typed.length() <= N+threshold){
+            candidates.addAll(smallWords);
+        }
+        System.out.println(candidates);
 
 
 
         // Filters potential suggestions to those within the edit distance threshold
-        for(int i = 0; i < dict.length; i++){
+        for(int i = 0; i < candidates.size(); i++){
             // THIS IS WRONG
-            int editD = editDistance(dict[i], typed);
+            int editD = editDistance(candidates.get(i), typed);
             if(editD <= threshold){
-                correctedWords.add(dict[i]);
-                System.out.println(dict[i] + ", " + editD);
+                correctedWords[editD].add(candidates.get(i));
+                System.out.println(candidates.get(i) + ", " + editD);
             }
         }
+        ArrayList<String> toReturn =  new ArrayList<>();
+        for(int i = 0; i <= threshold; i++) {
+            Collections.sort(correctedWords[i]);
+            toReturn.addAll(correctedWords[i]);
+        }
+
 
         // Collections.sort(correctedWords);
-        return correctedWords.toArray(new String[0]);
+        return toReturn.toArray(new String[0]);
     }
 
     // Returns the editDistance between the misspelled word and a potential suggestion
@@ -117,12 +163,29 @@ public class Autocorrect {
 
     // Creates the initial hash for the first three letters
     // Copied from my DNA code
-    public static int hash(String s, int start) {
+    public static int hash(String s) {
         int hash = 0;
         for (int i = 0; i < N; i++) {
-            hash = (hash*R + letters[s.charAt(start + i)]);
+            hash = (hash*R + letters[s.charAt(i)]) % MOD;
         }
         return hash;
+    }
+
+    // Method modified from geeksforgeeks.org
+    public static  ArrayList<String> removeDuplicates(ArrayList<String> list) {
+        // Create a new ArrayList
+        ArrayList<String> newList = new ArrayList<String>();
+
+        // Traverse through the original list
+        for (String element : list) {
+            // If this word is not present in newList, then add it
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+
+        // return the new list
+        return newList;
     }
 
 
