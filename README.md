@@ -9,4 +9,4 @@ There are five test cases, each of which will load data from [test number].txt, 
 test_files directory.
 
 ## My Program
-My spellcheck program utilizes hash maps, tabulation, 
+My spellcheck prompts the user for a word to autocorrect. It returns whether it inputted word is spelt correctly or not. If not, it will suggest a list of similar words in the dictionary.
