@@ -9,4 +9,4 @@ There are five test cases, each of which will load data from [test number].txt, 
 test_files directory.
 
 ## My Program
-My spellcheck program utilizes hash maps, 
+My spellcheck program utilizes hash maps, tabulation, 
