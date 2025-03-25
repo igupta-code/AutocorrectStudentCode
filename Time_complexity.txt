@@ -1,8 +1,9 @@
 Time Complexity Analysis:
 Constructor:
 The time-consuming step here is going through the dictionary to create all the n-grams for your dictionary hash map. Each word can be hashed in time
-proportional to it's length (O(n) for the initial hash and then O(n) for each shift over). So the constructor has an O(n*m) complexity, where n is
-the average length of all the words in your dictionary and m is the number of words in your dictionary.
+proportional to it's length (O(1) for the initial hash and then O(1) for each shift over). So the constructor has an O(n*m) complexity, where n is
+the average length of all the words in your dictionary and m is the number of words in your dictionary (n will be around 4-5 and m is size 143092
+for the large dictionary).
 
 Finding candidates:
 Because of our initial set-up, finding our candidate words is pretty quick. We just have to find all the three letter hashes for our misspelled word

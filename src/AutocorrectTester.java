@@ -14,7 +14,7 @@ public class AutocorrectTester {
     @Timeout(value = 100, unit = TimeUnit.MILLISECONDS)
     public void testSmall() {
         setTestData(0);
-        studentSolution = new Autocorrect(dictionary, threshold);
+        studentSolution = new Autocorrect(dictionary);
         assertArrayEquals(matches, studentSolution.runTest(typed), "Incorrect words returned.");
     }
 
@@ -22,7 +22,7 @@ public class AutocorrectTester {
     @Timeout(value = 100, unit = TimeUnit.MILLISECONDS)
     public void testMed() {
         setTestData(1);
-        studentSolution = new Autocorrect(dictionary, threshold);
+        studentSolution = new Autocorrect(dictionary);
         assertArrayEquals(matches, studentSolution.runTest(typed), "Incorrect words returned.");
     }
 
@@ -30,7 +30,7 @@ public class AutocorrectTester {
     @Timeout(value = 100, unit = TimeUnit.MILLISECONDS)
     public void testLarger() {
         setTestData(2);
-        studentSolution = new Autocorrect(dictionary, threshold);
+        studentSolution = new Autocorrect(dictionary);
         assertArrayEquals(matches, studentSolution.runTest(typed), "Incorrect words returned.");
     }
 

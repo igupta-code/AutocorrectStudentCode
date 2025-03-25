@@ -1,5 +1,3 @@
-import jdk.jfr.Threshold;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,22 +5,14 @@ import java.util.*;
 
 /**
  * Autocorrect
- * <p>
  * A command-line tool to suggest similar words when given one not in the dictionary.
  * </p>
  * @author Zach Blick
  * @author Isha Gupta
  */
 public class Autocorrect {
-
-    /**
-     * Constucts an instance of the Autocorrect class.
-     * @param words The dictionary of acceptable words.
-     * @param threshold The maximum number of edits a suggestion can have.
-     */
     private String[] dict;
-    private static int THRESHOLD = 2;
-
+    private static final int THRESHOLD = 2;
     public static final int R = 27;
     public static final int MOD = 50021;
     public static final int N = 3;
@@ -30,8 +20,12 @@ public class Autocorrect {
     ArrayList<String>[] dictHash;
     public ArrayList<String> smallWords;
 
+    /**
+     * Constucts an instance of the Autocorrect class.
+     * @param words The dictionary of acceptable words.
+     */
     // Constructor!
-    public Autocorrect(String[] words, int threshold) {
+    public Autocorrect(String[] words) {
         this.dict = words;
 
         // Set up the hash map for your dictionary
@@ -66,17 +60,20 @@ public class Autocorrect {
         }
     }
 
+    // Main method: prompts user and runs all methods
     public static void main(String[] args){
+        // Initialize dictionary, instance of class, and scanner
         String dict[] = loadDictionary("large");
-
-        System.out.println("How do you spell: ");
+        Autocorrect corrector = new Autocorrect(dict);
         Scanner scanner = new Scanner(System.in);
+
+        // Prompts and reads in misspelt word
+        System.out.println("How do you spell: ");
         String misspelt = scanner.nextLine();
 
-        Autocorrect corrector = new Autocorrect(dict, THRESHOLD);
-        // scanner.nextLine();
         while(!misspelt.isEmpty()){
             String[] toPrint = corrector.runTest(misspelt);
+            // If the word is correct or there are no suggested words, print error messages
             if(toPrint.length == 0) System.out.println("No matches for this word.");
             else if(toPrint[0].equals(misspelt)) System.out.println("Your word is spelt correctly!");
             else{
@@ -116,26 +113,25 @@ public class Autocorrect {
 
         // Remove duplicates
         candidates = removeDuplicates(candidates);
-        // Adds all the small words into candidates
+        // Adds all the small words into candidates if word is small
         if(typed.length() <= N+THRESHOLD){
             candidates.addAll(smallWords);
         }
 
         // Filters out words any words in candidates not within edit distance
-        for(int i = 0; i < candidates.size(); i++){
-            int editD = editDistance(candidates.get(i), typed);
-            if(editD <= THRESHOLD){
-                correctedWords[editD].add(candidates.get(i));
+        for (String candidate : candidates) {
+            int editD = editDistance(candidate, typed);
+            if (editD <= THRESHOLD) {
+                correctedWords[editD].add(candidate);
             }
         }
 
-        ArrayList<String> toReturn =  new ArrayList<>();
         // Alphabetically sorts each of the lists (which are already organized by edit distance)
+        ArrayList<String> toReturn =  new ArrayList<>();
         for(int i = 0; i <= THRESHOLD; i++) {
             Collections.sort(correctedWords[i]);
             toReturn.addAll(correctedWords[i]);
         }
-
         return toReturn.toArray(new String[0]);
     }
 
@@ -173,6 +169,7 @@ public class Autocorrect {
         }
         return hash;
     }
+
     // Shifts the hash over by one
     public static int shift(int i, String word, int seqHash){
         // Subtract out the first letter, xR to shift, add next number, and then mod
