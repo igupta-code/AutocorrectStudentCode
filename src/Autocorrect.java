@@ -12,10 +12,10 @@ import java.util.*;
  */
 public class Autocorrect {
     private String[] dict;
-    private static final int THRESHOLD = 2;
-    public static final int R = 27;
-    public static final int MOD = 50021;
-    public static final int N = 3;
+    private static final int THRESHOLD = 2,
+            R = 27,
+            MOD = 50021,
+            N = 3;
     static char[] letters = new char[256];
     ArrayList<String>[] dictHash;
     public ArrayList<String> smallWords;
